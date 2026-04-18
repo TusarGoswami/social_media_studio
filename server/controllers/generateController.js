@@ -102,7 +102,7 @@ export async function generateImage(req, res) {
 
     const aspectRatio = format === 'story' ? '9:16' : '1:1';
     const response = await client.models.generateImages({
-      model: 'imagen-3.0-generate-002',
+      model: 'imagen-4.0-generate-001',
       prompt: `${imagePrompt}. Style: clean, modern illustration with warm, inviting colors suitable for educational social media content. No text overlay in the image.`,
       config: {
         numberOfImages: 1,

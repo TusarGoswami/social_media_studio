@@ -24,7 +24,7 @@
 | State | useContext + useReducer |
 | Backend | Node.js + Express |
 | LLM | Google Gemini (`gemini-2.5-flash`) |
-| Image Gen | Google Imagen 3 (`imagen-3.0-generate-002`) |
+| Image Gen | Google Imagen 4 (`imagen-4.0-generate-001`) |
 | Export | html2canvas + JSZip + FileSaver |
 | Icons | Lucide React |
 
@@ -65,7 +65,7 @@ Navigate to `http://localhost:5173` if your browser doesn't open automatically.
 ### Server (`server/.env`)
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `GEMINI_API_KEY` | Yes | Google GenAI Key for `gemini-2.5-flash` and `imagen-3` |
+| `GEMINI_API_KEY` | Yes | Google GenAI Key for `gemini-2.5-flash` and `imagen-4.0` |
 | `LLM_PROVIDER` | No | `"gemini"` (default) |
 | `PORT` | No | Server port (default: 3001) |
 | `CLIENT_URL` | No | Frontend URL for CORS (default: http://localhost:5173 / localhost:*) |
