@@ -33,6 +33,8 @@ export function useCarousel() {
 
     try {
       const data = await api.generateCarousel(idea, state.format, brandTone, 6);
+      
+      // Clear timers
       clearInterval(stepInterval);
       clearInterval(stepTimer);
 
@@ -46,7 +48,14 @@ export function useCarousel() {
     } catch (err) {
       clearInterval(stepInterval);
       clearInterval(stepTimer);
-      dispatch({ type: 'SET_ERROR', error: err.message });
+      
+      // Sanitize message for the UI
+      let displayError = err.message || 'Something went wrong. Please try again.';
+      if (displayError.includes('429') || displayError.includes('quota') || displayError.includes('limit')) {
+        displayError = "We're currently handling too many requests. Please try again in 1 minute.";
+      }
+      
+      dispatch({ type: 'SET_ERROR', error: displayError });
     }
   }, [state.format, dispatch]);
 

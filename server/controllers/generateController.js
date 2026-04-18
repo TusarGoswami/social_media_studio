@@ -59,8 +59,20 @@ export async function generateCarousel(req, res) {
 
     res.json({ slides: validated, format, brandTone });
   } catch (err) {
-    const status = err.statusCode || 500;
-    res.status(status).json({ error: err.message || 'Failed to generate carousel. Please try again.' });
+    console.error('Carousel Generation Error:', err);
+    let status = err.statusCode || 500;
+    let message = 'Failed to generate carousel. Please try again in a moment.';
+
+    // Hide specific API details from the user
+    if (err.message?.includes('429') || err.message?.includes('quota') || err.message?.includes('RESOURCE_EXHAUSTED')) {
+      status = 429;
+      message = "We're experiencing high traffic or quota limits. Please try again in a minute.";
+    } else if (err.message?.includes('API key')) {
+      status = 401;
+      message = "Service configuration error. Please contact the administrator.";
+    }
+
+    res.status(status).json({ error: message });
   }
 }
 
