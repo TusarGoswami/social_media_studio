@@ -6,12 +6,30 @@
 
 ---
 
-## 🚀 Live URL
+## 🚀 Deployment Guide
 
-> **Frontend:** [Deploy to Vercel/Netlify]  
-> **Backend:** [Deploy to Render/Railway]  
-> *(Add your deployed URLs here after deployment)*
+### **Backend (Render)**
+1. Sign in to [Render](https://render.com/).
+2. Create a **New Blue Service** and connect this GitHub repo.
+3. **Setting Up:**
+   - **Root Directory:** `server`
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+4. **Environment Variables:**
+   - Add `GEMINI_API_KEY` (your secure Google key).
+   - Add `CLIENT_URL`: The URL of your Vercel frontend (Add this after the frontend is deployed).
 
+### **Frontend (Vercel)**
+1. Sign in to [Vercel](https://vercel.com/).
+2. Click **Add New Project** and connect this GitHub repo.
+3. **Setting Up:**
+   - **Root Directory:** `client`
+   - **Framework Preset:** `Vite` (Vercel will usually auto-detect).
+4. **Environment Variables:**
+   - Add `VITE_API_URL`: Your Render backend URL followed by `/api` (e.g., `https://social-media-studio.onrender.com/api`).
+5. **Deploy!**
+
+---
 ---
 
 ## 🛠️ Tech Stack
