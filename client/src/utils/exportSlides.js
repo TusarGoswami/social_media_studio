@@ -10,25 +10,22 @@ const EXPORT_DIMS = {
 async function captureSlideElement(slideEl, format) {
   const dims = EXPORT_DIMS[format] || EXPORT_DIMS.carousel;
 
+  // We don't clone if we are using the dedicated export nodes
+  // to avoid issues with absolute positioned children or data urls
   const container = document.createElement('div');
   container.style.cssText = `position:fixed;left:-9999px;top:0;width:${dims.width}px;height:${dims.height}px;overflow:hidden;z-index:-1;`;
+  
+  // Create a clean wrapper for the element
+  const wrapper = slideEl.cloneNode(true);
+  wrapper.style.display = 'block';
+  wrapper.style.visibility = 'visible';
+  wrapper.style.position = 'relative';
+  
+  // Remove any interactive UI but keep the content
+  const actions = wrapper.querySelector('.slide-actions');
+  if (actions) actions.remove();
 
-  const clone = slideEl.cloneNode(true);
-  clone.style.width = '100%';
-  clone.style.height = '100%';
-  clone.style.borderRadius = '0';
-
-  const inner = clone.querySelector('.slide-card-inner');
-  if (inner) {
-    inner.style.borderRadius = '0';
-    inner.style.width = '100%';
-    inner.style.height = '100%';
-  }
-
-  const actionBtns = clone.querySelectorAll('.slide-actions');
-  actionBtns.forEach(el => el.remove());
-
-  container.appendChild(clone);
+  container.appendChild(wrapper);
   document.body.appendChild(container);
 
   const canvas = await html2canvas(container, {

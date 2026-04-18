@@ -32,10 +32,29 @@ async function callLLM(systemPrompt, userPrompt) {
 }
 
 function parseJSON(raw) {
-  let text = raw.trim();
-  text = text.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '');
-  text = text.trim();
-  return JSON.parse(text);
+  try {
+    let text = raw.trim();
+    // Remove markdown code blocks if present
+    text = text.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '');
+    
+    // Find the first occurrence of [ or { and the last occurrence of ] or }
+    const startBracket = text.indexOf('[');
+    const startBrace = text.indexOf('{');
+    const start = (startBracket !== -1 && (startBrace === -1 || startBracket < startBrace)) ? startBracket : startBrace;
+    
+    const endBracket = text.lastIndexOf(']');
+    const endBrace = text.lastIndexOf('}');
+    const end = (endBracket !== -1 && (endBrace === -1 || endBracket > endBrace)) ? endBracket : endBrace;
+    
+    if (start !== -1 && end !== -1) {
+      text = text.substring(start, end + 1);
+    }
+    
+    return JSON.parse(text);
+  } catch (err) {
+    console.error('JSON Parse Error. Raw text:', raw);
+    throw new Error('Failed to parse AI response. Please try again.');
+  }
 }
 
 export async function generateCarousel(req, res) {
