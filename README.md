@@ -1,6 +1,6 @@
 # 🎨 Social Media Studio
 
-**Transform rough ideas into polished, brand-consistent Instagram carousels with AI.** Type a messy thought → get a designed, ready-to-post visual carousel. Built for Cuemath's content team targeting parents with learning science, math education, and child confidence content.
+**Transform rough ideas into polished, brand-consistent Instagram carousels with AI.** Type a messy thought → get a designed, ready-to-post visual carousel. Built for content creators targeting high-fidelity visuals seamlessly bridging text and dynamically tailored AI images quickly.
 
 > From messy input to polished output — that's the entire product.
 
@@ -8,8 +8,8 @@
 
 ## 🚀 Live URL
 
-> **Frontend:** [Deploy to Vercel]  
-> **Backend:** [Deploy to Render]  
+> **Frontend:** [Deploy to Vercel/Netlify]  
+> **Backend:** [Deploy to Render/Railway]  
 > *(Add your deployed URLs here after deployment)*
 
 ---
@@ -20,11 +20,11 @@
 |-------|-----------|
 | Frontend | React 18 + Vite |
 | Animations | Framer Motion |
-| Styling | Vanilla CSS with CSS Variables (Light/Dark theme) |
+| Styling | Vanilla CSS with CSS Variables (Light/Dark theme, Fully Responsive) |
 | State | useContext + useReducer |
 | Backend | Node.js + Express |
-| LLM | OpenAI GPT-4o / Anthropic Claude Sonnet |
-| Image Gen | DALL-E 3 |
+| LLM | Google Gemini (`gemini-2.5-flash`) |
+| Image Gen | Google Imagen 3 (`imagen-3.0-generate-002`) |
 | Export | html2canvas + JSZip + FileSaver |
 | Icons | Lucide React |
 
@@ -35,33 +35,28 @@
 ### Prerequisites
 - Node.js 18+ 
 - npm 9+
-- OpenAI API key (required for LLM + image generation) **OR** Anthropic API key (for LLM only)
+- Google Gemini API key
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/social-media-studio.git
-cd social-media-studio
+git clone https://github.com/TusarGoswami/social_media_studio.git
+cd social_media_studio
 ```
 
-### 2. Setup the server
+### 2. Setup environment variables
 ```bash
-cd server
-cp .env.example .env
-# Edit .env and add your API keys
+cp server/.env.example server/.env
+# Edit server/.env and securely add your GEMINI_API_KEY
+```
+
+### 3. Install packages & Start
+```bash
 npm install
 npm run dev
 ```
+*(This command leverages concurrently to run both the React frontend and Node backend gracefully in one unified terminal).*
 
-### 3. Setup the client (new terminal)
-```bash
-cd client
-cp .env.example .env
-npm install
-npm run dev
-```
-
-### 4. Open the app
-Navigate to `http://localhost:5173`
+Navigate to `http://localhost:5173` if your browser doesn't open automatically.
 
 ---
 
@@ -70,13 +65,10 @@ Navigate to `http://localhost:5173`
 ### Server (`server/.env`)
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `OPENAI_API_KEY` | Yes* | OpenAI API key for GPT-4o and DALL-E 3 |
-| `ANTHROPIC_API_KEY` | Yes* | Anthropic API key for Claude Sonnet |
-| `LLM_PROVIDER` | No | `"openai"` or `"anthropic"` (default: openai) |
+| `GEMINI_API_KEY` | Yes | Google GenAI Key for `gemini-2.5-flash` and `imagen-3` |
+| `LLM_PROVIDER` | No | `"gemini"` (default) |
 | `PORT` | No | Server port (default: 3001) |
-| `CLIENT_URL` | No | Frontend URL for CORS (default: http://localhost:5173) |
-
-*At least one LLM API key is required. OpenAI key enables both text and image generation.
+| `CLIENT_URL` | No | Frontend URL for CORS (default: http://localhost:5173 / localhost:*) |
 
 ### Client (`client/.env`)
 | Variable | Required | Description |
@@ -87,19 +79,17 @@ Navigate to `http://localhost:5173`
 
 ## 🏗️ Key Decisions & Tradeoffs
 
-1. **Dual LLM support** — Supports both OpenAI and Anthropic to give flexibility. OpenAI is preferred since it also powers DALL-E 3 image generation.
+1. **Google GenAI Ecosystem** — Replaced multi-LLM workflows with the unified Google `@google/genai` SDK giving access to `gemini-2.5-flash` for high-speed text context and `imagen-3.0` for visually rich assets smoothly natively.
 
-2. **CSS Variables over Tailwind** — Vanilla CSS with CSS custom properties enables seamless light/dark theming with smooth transitions, and avoids framework lock-in.
+2. **CSS Variables & Deep Responsiveness** — Vanilla CSS with custom properties powers completely responsive components with modern constraints, light/dark theming, hover limits, overlapping, and fast typography overrides on narrow mobile devices securely.
 
-3. **useReducer over Redux** — For an app of this scope, useContext + useReducer provides sufficient state management without the overhead of external libraries.
+3. **useReducer over Redux** — For an app of this scope, `useContext` + `useReducer` provides sufficient state management for tracking the carousel deck, generation histories, and complex interactions cleanly without external boilerplate overhead.
 
-4. **Progressive image loading** — Text slides are returned immediately from the LLM. Image generation triggers in parallel afterward, so users see content instantly while visuals fill in.
+4. **Progressive Image Loading** — Text formatting from Gemini resolves instantly and paints the slides dynamically. Then, asynchronous callbacks stream visually complex `imagen-3` generative results natively into the backgrounds seamlessly while the user can start editing text.
 
-5. **Brand kit in localStorage** — Persists brand colors, font, tone, and logo across sessions without requiring user accounts or backend storage.
+5. **Local Persistent Brand Kit** — Stores custom hex values `#4F46E5`, `#06B6D4`, embedded fonts, and base64 logo items permanently inside `localStorage` for returning sessions without building a database workflow.
 
-6. **Hidden export container** — Full-resolution (1080px) slide elements are rendered off-screen for pixel-perfect PNG export, separate from the responsive preview display.
-
-7. **Graceful degradation** — If DALL-E isn't available, slides show beautiful gradient backgrounds using brand colors. The app is fully functional without image generation.
+6. **Hidden Export Canvas Node** — Exact 1080px (1:1 Carousel) and 9:16 (Story) aspect ratios are constructed completely independently off-browser on hidden dom nodes to ensure the PNG zipped exports scale flawlessly into Instagram.
 
 ---
 
@@ -112,9 +102,7 @@ Navigate to `http://localhost:5173`
 - **Analytics dashboard** tracking which carousel topics perform best
 - **Custom image upload** per slide as an alternative to AI generation
 - **PDF export** option alongside PNG/ZIP
-- **Undo/Redo** system for all slide edits
 - **A/B title suggestions** — generate 3 title variants per slide for A/B testing
-- **Progressive Web App** support for offline access to saved carousels
 
 ---
 
@@ -128,19 +116,19 @@ social-media-studio/
 │   │   │   ├── IdeaInput.jsx        # Main idea input with presets
 │   │   │   ├── BrandKit.jsx         # Brand profile sidebar
 │   │   │   ├── CarouselPreview.jsx  # Animated slide viewer
-│   │   │   ├── SlideCard.jsx        # Individual slide with editing
+│   │   │   ├── SlideCard.jsx        # Individual stylish inline-editable slide
 │   │   │   ├── Toolbar.jsx          # Global action bar
 │   │   │   └── GenerationHistory.jsx # Past carousels sidebar
 │   │   ├── context/
 │   │   │   └── StudioContext.jsx    # Global state management
 │   │   ├── hooks/
-│   │   │   ├── useCarousel.js       # Carousel operations
-│   │   │   └── useBrandKit.js       # Brand kit persistence
+│   │   │   ├── useCarousel.js       # Carousel async operations
+│   │   │   └── useBrandKit.js       # localStorage persistent hook
 │   │   ├── utils/
-│   │   │   ├── api.js               # API client with retry
-│   │   │   └── exportSlides.js      # PNG/ZIP export
+│   │   │   ├── api.js               # Backend communicator
+│   │   │   └── exportSlides.js      # PNG/ZIP export engine
 │   │   ├── styles/
-│   │   │   └── globals.css          # Design system
+│   │   │   └── globals.css          # Fully Responsive UI design
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   ├── .env.example
@@ -149,17 +137,19 @@ social-media-studio/
 │
 ├── server/
 │   ├── controllers/
-│   │   └── generateController.js    # LLM + image generation
+│   │   └── generateController.js    # Gemini 2.5 Flash + Imagen 3 Logic
 │   ├── routes/
 │   │   └── generate.js              # API routes
 │   ├── prompts/
-│   │   └── carouselPrompt.js        # Prompt engineering
+│   │   └── carouselPrompt.js        # Markdown system instructions
 │   ├── middleware/
 │   │   └── validateInput.js         # Input validation
 │   ├── .env.example
-│   ├── server.js
+│   ├── server.js                    # Express CORS entrypoint
 │   └── package.json
 │
+├── package.json                     # Concurrently Root Script Config
+├── .gitignore                       # Clean secure ignore logic
 └── README.md
 ```
 
