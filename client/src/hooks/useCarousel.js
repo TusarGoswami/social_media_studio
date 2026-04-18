@@ -6,7 +6,8 @@ const GENERATION_STEPS = [
   '✨ Understanding your idea...',
   '✍️ Crafting the narrative...',
   '🎨 Designing your slides...',
-  '🖼️ Adding finishing touches...'
+  '🖼️ Adding finishing touches...',
+  '🚀 Optimizing for publishing...'
 ];
 
 export function useCarousel() {

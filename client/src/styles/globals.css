@@ -384,18 +384,26 @@ a { color: inherit; text-decoration: none; }
 
 /* ---- Generating State ---- */
 .generating-overlay {
-  width: 100%;
-  max-width: 720px;
-  margin-bottom: 32px;
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
 }
 
 .generating-card {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 48px 32px;
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  border-radius: var(--radius-xl);
+  padding: 48px;
+  box-shadow: var(--shadow-xl), var(--shadow-glow);
   text-align: center;
+  width: 100%;
+  max-width: 440px;
 }
 
 .generating-spinner {
