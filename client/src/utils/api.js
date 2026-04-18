@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const API_BASE = 'https://social-media-studio-i533.onrender.com/api';
 
 async function apiCall(endpoint, body, retries = 2) {
   let lastError;
