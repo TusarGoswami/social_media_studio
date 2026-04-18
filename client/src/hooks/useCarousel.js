@@ -32,7 +32,11 @@ export function useCarousel() {
     }, 2200);
 
     try {
-      const data = await api.generateCarousel(idea, state.format, brandTone, 6);
+      // Use Promise.all to ensure a minimum display time for the loading state (e.g., 1.5 seconds)
+      const [data] = await Promise.all([
+        api.generateCarousel(idea, state.format, brandTone, 6),
+        new Promise(resolve => setTimeout(resolve, 1500))
+      ]);
       
       // Clear timers
       clearInterval(stepInterval);

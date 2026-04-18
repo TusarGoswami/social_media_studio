@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Send } from 'lucide-react';
+import { Sparkles, Send, Loader2 } from 'lucide-react';
 import { useStudio } from '../context/StudioContext.jsx';
 import { useCarousel } from '../hooks/useCarousel.js';
 import { useBrandKit } from '../hooks/useBrandKit.js';
@@ -18,21 +18,30 @@ export default function IdeaInput() {
   const { generateCarousel, setFormat } = useCarousel();
   const { brandKit } = useBrandKit();
   const [idea, setIdea] = useState('');
+  const [isLocalLoading, setIsLocalLoading] = useState(false);
   const textareaRef = useRef(null);
 
   const charCount = idea.length;
   const charClass = charCount > 1800 ? 'danger' : charCount > 1500 ? 'warning' : '';
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (idea.trim().length < 10 || state.isGenerating) return;
-    generateCarousel(idea.trim(), brandKit.tone);
+    if (idea.trim().length < 10 || state.isGenerating || isLocalLoading) return;
+    
+    setIsLocalLoading(true);
+    try {
+      await generateCarousel(idea.trim(), brandKit.tone);
+    } finally {
+      setIsLocalLoading(false);
+    }
   }
 
   function handlePreset(preset) {
     setIdea(preset);
     textareaRef.current?.focus();
   }
+
+  const isGenerating = state.isGenerating || isLocalLoading;
 
   return (
     <div className="idea-input-wrapper">
@@ -108,14 +117,14 @@ export default function IdeaInput() {
             <motion.button
               type="submit"
               className="generate-btn"
-              disabled={idea.trim().length < 10 || state.isGenerating}
+              disabled={idea.trim().length < 10 || isGenerating}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               id="generate-btn"
             >
-              {state.isGenerating ? (
+              {isGenerating ? (
                 <>
-                  <div className="generating-spinner" style={{ width: 16, height: 16, margin: 0, borderWidth: 2 }} />
+                  <Loader2 size={18} className="spin" style={{ marginRight: '8px' }} />
                   Generating...
                 </>
               ) : (

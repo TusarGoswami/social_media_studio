@@ -183,12 +183,12 @@ export default function App() {
             )}
           </AnimatePresence>
 
-          <AnimatePresence mode="wait">
-            {state.isGenerating && <GeneratingState step={state.generationStep} />}
-          </AnimatePresence>
-
           {!state.isGenerating && state.slides.length > 0 && <CarouselPreview />}
         </main>
+
+        <AnimatePresence mode="wait">
+          {state.isGenerating && <GeneratingState step={state.generationStep} />}
+        </AnimatePresence>
 
         <AnimatePresence>
           {state.sidebarPanel === 'history' && (
