@@ -126,26 +126,30 @@ export async function generateImage(req, res) {
   try {
     const { imagePrompt, format } = req.body;
 
-    const client = getAIClient();
-    if (!client) {
-      return res.json({ imageUrl: null, fallback: true, message: 'Image generation requires a Gemini API key for Imagen 3.' });
+    // Use Pollinations.ai free API (Flux model) — no API key required
+    const width = format === 'story' ? 576 : 1024;
+    const height = format === 'story' ? 1024 : 1024;
+
+    const enhancedPrompt = `${imagePrompt}. Style: clean, modern illustration with warm, inviting colors suitable for educational social media content. No text overlay in the image.`;
+    const encodedPrompt = encodeURIComponent(enhancedPrompt);
+
+    const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&nologo=true&seed=${Math.floor(Math.random() * 100000)}`;
+
+    console.log('Generating image via Pollinations.ai...');
+
+    const imageResponse = await fetch(pollinationsUrl);
+
+    if (!imageResponse.ok) {
+      throw new Error(`Pollinations returned ${imageResponse.status}`);
     }
 
-    const aspectRatio = format === 'story' ? '9:16' : '1:1';
-    const response = await client.models.generateImages({
-      model: 'imagen-4.0-generate-001',
-      prompt: `${imagePrompt}. Style: clean, modern illustration with warm, inviting colors suitable for educational social media content. No text overlay in the image.`,
-      config: {
-        numberOfImages: 1,
-        aspectRatio: aspectRatio,
-        outputMimeType: 'image/jpeg'
-      }
-    });
+    const arrayBuffer = await imageResponse.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString('base64');
+    const contentType = imageResponse.headers.get('content-type') || 'image/jpeg';
 
-    const base64 = response.generatedImages[0].image.imageBytes;
-    res.json({ imageUrl: `data:image/jpeg;base64,${base64}` });
+    res.json({ imageUrl: `data:${contentType};base64,${base64}` });
   } catch (err) {
-    console.error(err);
+    console.error('Image generation error:', err.message);
     res.json({ imageUrl: null, fallback: true, message: 'Image generation failed. Using placeholder.' });
   }
 }
